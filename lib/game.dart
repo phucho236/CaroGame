@@ -4,12 +4,14 @@ import 'dart:async';
 
 bool vsBot;
 int currentMoves = 0;
-//empty board
+int depthaAscending = 1;
+
 String status = '';
 String winner = '';
 var _gamePageState;
 var _turnState;
 var _context;
+int maxDepthaAscending;
 String _turn = 'x';
 bool loading = false;
 int testLoop = 0;
@@ -44,11 +46,11 @@ List<String> _board = [
 // ignore: must_be_immutable
 class GamePage extends StatefulWidget {
   bool isBot;
-
-  GamePage({this.isBot}) {
+  int maxDepthaAscendingInput;
+  GamePage({this.isBot, this.maxDepthaAscendingInput}) {
     _resetGame();
     vsBot = this.isBot;
-
+    maxDepthaAscending = maxDepthaAscendingInput;
     if (vsBot) _turn = 'o';
   }
 
@@ -186,7 +188,7 @@ class _BoxState extends State<Box> {
               loading = true;
               if (currentMoves > 24) {
               } else
-                _bestMove(_board);
+                _bestMove(_board, maxDepthaAscending);
             }
             pressed();
           }
@@ -812,7 +814,8 @@ int _eval(List<String> _board) {
 //, int depth
 int minmax(
   List<String> _board,
-  int depth,
+  int depth_,
+  int depthAscending,
   bool isMax,
   int alpha,
   int beta,
@@ -820,7 +823,7 @@ int minmax(
   int score = _eval(_board);
   int best = 0;
   if (score == 50 || score == -50) return score;
-  if (depth == 3) return best;
+  if (depth_ == depthAscending) return best;
   //if (!isMovesLeft(_board)) return 0;
 //  if (testLoop < 250000) {
   if (isMax) {
@@ -831,11 +834,13 @@ int minmax(
         _board[i] = player;
         //, depth + 1
 
-        best = max(best, minmax(_board, depth + 1, !isMax, alpha, beta));
+        best = max(best,
+            minmax(_board, depth_ + 1, depthAscending, !isMax, alpha, beta));
 
         // remove giá trị mới gán để giữ nguyên list ban đầu
         _board[i] = '';
-        print("Best Max, $best index, $i loop ${testLoop++}, depth = ${depth}");
+        print(
+            "Best Max, $best index, $i loop ${testLoop++}, depth_ = $depth_ ,depthAscending = ${depthAscending}");
         alpha = max(alpha, best);
         if (beta <= alpha) {
           break;
@@ -843,34 +848,30 @@ int minmax(
       }
     }
 
-    // testLoop = 0;
     return best;
   } else {
     best = 5000;
     for (int i = 1; i < 25; i++) {
       if (_board[i] == '') {
         _board[i] = opponent;
-        //, depth + 1
-        best = min(best, minmax(_board, depth + 1, !isMax, alpha, beta));
+        best = min(best,
+            minmax(_board, depth_ + 1, depthAscending, !isMax, alpha, beta));
         _board[i] = '';
-        print("best min $best, index $i, loop${testLoop++} depth = ${depth}");
+        print(
+            "best min $best, index $i, loop${testLoop++} ,depth_ = $depth_ ,depthAscending = ${depthAscending}");
         if (beta <= alpha) {
           break;
         }
       }
     }
-    //testLoop = 0;
     return best;
   }
-//  } else {
-//    testLoop = 0;
-//    return best;
-//  }
 }
 
-int _bestMove(List<String> _board) {
+int _bestMove(List<String> _board, int maxDepthaAscending) {
   int bestMove = -5000, moveVal;
   int i, bi;
+  int a = 1;
 
   print("currentMoves = $currentMoves");
   for (i = 0; i < 25; i++) {
@@ -878,10 +879,7 @@ int _bestMove(List<String> _board) {
     if (_board[i] == '') {
       moveVal = -5000;
       _board[i] = player;
-      // 0,
-      moveVal = minmax(_board, 0, false, -5000, 5000);
-
-      // Lặp không return đc giá trị này luôn
+      moveVal = minmax(_board, 0, depthaAscending, false, -5000, 5000);
       print("moveVal $moveVal");
       _board[i] = '';
       if (moveVal > bestMove) {
@@ -890,7 +888,9 @@ int _bestMove(List<String> _board) {
       }
     }
   }
-
+  depthaAscending < maxDepthaAscending
+      ? depthaAscending = depthaAscending + 1
+      : depthaAscending;
   _board[bi] = player;
   _gamePageState.setState(() {});
   loading = false;

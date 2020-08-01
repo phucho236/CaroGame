@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'game.dart';
 
 class HomePage extends StatefulWidget {
@@ -7,10 +8,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int depth = 1;
+  void _showDialog() {
+    showDialog<int>(
+        context: context,
+        builder: (BuildContext context) {
+          return new NumberPickerDialog.integer(
+            minValue: 1,
+            maxValue: 5,
+            title: new Text("Pick a new depth"),
+            initialIntegerValue: depth,
+          );
+        }).then((value) {
+      if (value != null) {
+        setState(() {
+          depth = value;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: _showDialog,
+          )
+        ],
         title: Text("CaroGame"),
       ),
       body: Container(
@@ -57,6 +84,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
                         return new GamePage(
+                          maxDepthaAscendingInput: depth,
                           isBot: true,
                         );
                       }));
@@ -76,6 +104,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
                         return new GamePage(
+                          maxDepthaAscendingInput: depth,
                           isBot: false,
                         );
                       }));
