@@ -127,6 +127,7 @@ class Box extends StatefulWidget {
 
 class _BoxState extends State<Box> {
   void pressed() {
+    print("co vao day k: ${checkGameVer1()}");
     setState(() {
       currentMoves++;
       if (checkGameVer1()) {
@@ -169,9 +170,9 @@ class _BoxState extends State<Box> {
               else
                 _board[widget.index] = 'o';
             } else if (!loading) {
-              loading = true;
               _board[widget.index] = 'o';
-              if (currentMoves >= 24) {
+              loading = true;
+              if (currentMoves > 24) {
               } else
                 _bestMove(_board);
             }
@@ -220,8 +221,9 @@ bool checkGameVer1() {
       checkDiagonallyLeftToRight2 == true ||
       checkDiagonallyLeftToRight1 == true) {
     return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 //check nữa trên bàn cờ theo hàng xéo từ trái qua phải
@@ -247,10 +249,8 @@ bool _checkDiagonallyLeftToRight2(
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
-  if (positionEndTmp == 4) {
+  } catch (err) {}
+  if (lenght < 2) {
     return false;
   } else {
     return _checkDiagonallyLeftToRight2(
@@ -284,10 +284,8 @@ bool _checkDiagonallyLeftToRight1({
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
-  if (positionEndTmp == 20) {
+  } catch (err) {}
+  if (lenght < 2) {
     return false;
   } else {
     return _checkDiagonallyLeftToRight1(
@@ -321,10 +319,8 @@ bool _checkDiagonallyRightToLeft2({
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
-  if (positionEndTmp == 0) {
+  } catch (err) {}
+  if (lenghtTmp < 2) {
     return false;
   } else {
     return _checkDiagonallyRightToLeft2(
@@ -358,10 +354,8 @@ bool _checkDiagonallyRightToLeft1({
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
-  if (positionEndTmp == _board.length - 1) {
+  } catch (err) {}
+  if (lenghtTmp < 2) {
     return false;
   } else {
     return _checkDiagonallyRightToLeft1(
@@ -393,9 +387,7 @@ bool _checkGameHorizontal({
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
+  } catch (err) {}
   if (positionEndTmp == _board.length - 1) {
     return false;
   } else {
@@ -427,9 +419,7 @@ bool _checkGameVertical({
         return true;
       }
     }
-  } catch (err) {
-    return false;
-  }
+  } catch (err) {}
   if (positionEndTmp == _board.length - 1) {
     return false;
   } else {
@@ -551,7 +541,7 @@ dynamic _checkDiagonallyLeftToRightScore2({
   } catch (err) {
     return false;
   }
-  if (positionEndTmp == 4) {
+  if (lenghtTmp < 2) {
     return false;
   } else {
     return _checkDiagonallyLeftToRightScore2(
@@ -588,7 +578,7 @@ dynamic _checkDiagonallyLeftToRightScore1({
   } catch (err) {
     return false;
   }
-  if (positionEndTmp == 20) {
+  if (lenghtTmp < 2) {
     return false;
   } else {
     return _checkDiagonallyLeftToRightScore1(
@@ -625,7 +615,7 @@ dynamic _checkDiagonallyRightToLeftScore2({
   } catch (err) {
     return false;
   }
-  if (positionEndTmp == 0) {
+  if (lenghtTmp < 2) {
     return false;
   } else {
     return _checkDiagonallyRightToLeftScore2(
@@ -662,7 +652,7 @@ dynamic _checkDiagonallyRightToLeftScore1({
   } catch (err) {
     return false;
   }
-  if (positionEndTmp == _board.length - 1) {
+  if (lenght < 2) {
     return false;
   } else {
     return _checkDiagonallyRightToLeftScore1(
@@ -793,51 +783,77 @@ int _eval(List<String> _board) {
 
 // deth = 0, isMax = false
 //, int depth
-int minmax(List<String> _board, bool isMax) {
+int minmax(
+  List<String> _board,
+  int depth,
+  bool isMax,
+  int alpha,
+  int beta,
+) {
   int score = _eval(_board);
   int best = 0;
-
   if (score == 50 || score == -50) return score;
+  if (depth == 3) return best;
   //if (!isMovesLeft(_board)) return 0;
+//  if (testLoop < 250000) {
   if (isMax) {
-    best = -1000000;
+    best = -5000;
     for (int i = 0; i < 25; i++) {
       if (_board[i] == '') {
         // gán vào để tính giá trị min max mới
         _board[i] = player;
         //, depth + 1
-        best = max(best, minmax(_board, !isMax));
+
+        best = max(best, minmax(_board, depth + 1, !isMax, alpha, beta));
+
         // remove giá trị mới gán để giữ nguyên list ban đầu
         _board[i] = '';
-        print("Best Max, $best index, $i loop ${testLoop++}");
+        print("Best Max, $best index, $i loop ${testLoop++}, depth = ${depth}");
+        alpha = max(alpha, best);
+        if (beta <= alpha) {
+          break;
+        }
       }
     }
+
+    // testLoop = 0;
     return best;
   } else {
-    best = 1000000;
-    for (int i = 0; i < 25; i++) {
+    best = 5000;
+    for (int i = 1; i < 25; i++) {
       if (_board[i] == '') {
         _board[i] = opponent;
         //, depth + 1
-        best = min(best, minmax(_board, !isMax));
+        best = min(best, minmax(_board, depth + 1, !isMax, alpha, beta));
         _board[i] = '';
-        print("best min $best, index $i, loop${testLoop++}");
+        print("best min $best, index $i, loop${testLoop++} depth = ${depth}");
+        if (beta <= alpha) {
+          break;
+        }
       }
     }
+    //testLoop = 0;
     return best;
   }
+//  } else {
+//    testLoop = 0;
+//    return best;
+//  }
 }
 
 int _bestMove(List<String> _board) {
-  int bestMove = -1000000, moveVal;
+  int bestMove = -5000, moveVal;
   int i, bi;
+
+  print("currentMoves = $currentMoves");
   for (i = 0; i < 25; i++) {
     print("Lan lap $i");
     if (_board[i] == '') {
-      moveVal = -1000000;
+      moveVal = -5000;
       _board[i] = player;
       // 0,
-      moveVal = minmax(_board, false);
+      moveVal = minmax(_board, 0, false, -5000, 5000);
+
       // Lặp không return đc giá trị này luôn
       print("moveVal $moveVal");
       _board[i] = '';
@@ -847,6 +863,7 @@ int _bestMove(List<String> _board) {
       }
     }
   }
+
   _board[bi] = player;
   _gamePageState.setState(() {});
   loading = false;
