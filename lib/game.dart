@@ -12,6 +12,7 @@ var _turnState;
 var _context;
 String _turn = 'First Move: X';
 bool loading = false;
+int testLoop = 0;
 List<String> _board = [
   '',
   '',
@@ -128,7 +129,7 @@ class _BoxState extends State<Box> {
   void pressed() {
     setState(() {
       currentMoves++;
-      if (checkGameVer1(_board)) {
+      if (checkGameVer1()) {
         awaitfnn();
       } else if (currentMoves >= _board.length) {
         awaitfn('It\'s a Draw', 'Want to try again?', 'Go Back', 'New Game');
@@ -174,7 +175,6 @@ class _BoxState extends State<Box> {
               } else
                 _bestMove(_board);
             }
-
             pressed();
           }
         });
@@ -206,13 +206,13 @@ class _StatusState extends State<Status> {
 }
 
 //-------------------------------------Caro game Brain ---------------------------
-bool checkGameVer1(List<String> board) {
-  bool checkGameHorizontal = _checkGameHorizontal(board: _board);
-  bool checkGameVertical = _checkGameVertical(board: board);
-  bool checkDiagonallyRightToLeft2 = _checkDiagonallyRightToLeft2(board: board);
-  bool checkDiagonallyRightToLeft1 = _checkDiagonallyRightToLeft1(board: board);
-  bool checkDiagonallyLeftToRight2 = _checkDiagonallyLeftToRight2(board: board);
-  bool checkDiagonallyLeftToRight1 = _checkDiagonallyLeftToRight1(board: board);
+bool checkGameVer1() {
+  bool checkGameHorizontal = _checkGameHorizontal();
+  bool checkGameVertical = _checkGameVertical();
+  bool checkDiagonallyRightToLeft2 = _checkDiagonallyRightToLeft2();
+  bool checkDiagonallyRightToLeft1 = _checkDiagonallyRightToLeft1();
+  bool checkDiagonallyLeftToRight2 = _checkDiagonallyLeftToRight2();
+  bool checkDiagonallyLeftToRight1 = _checkDiagonallyLeftToRight1();
   if (checkGameHorizontal == true ||
       checkGameVertical == true ||
       checkDiagonallyRightToLeft2 == true ||
@@ -262,17 +262,17 @@ bool _checkDiagonallyLeftToRight2(
 }
 
 //check nữa dưới bàn cờ theo hàng xéo từ trái qua phải
-bool _checkDiagonallyLeftToRight1(
-    {int positonStart = 0,
-    int positionEnd = 24,
-    int lenght = 5,
-    @required List<String> board}) {
+bool _checkDiagonallyLeftToRight1({
+  int positonStart = 5,
+  int positionEnd = 23,
+  int lenght = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 6) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -291,25 +291,25 @@ bool _checkDiagonallyLeftToRight1(
     return false;
   } else {
     return _checkDiagonallyLeftToRight1(
-        positonStart: positonStartTmp + 5,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp - 1,
-        board: board);
+      positonStart: positonStartTmp + 5,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp - 1,
+    );
   }
 }
 
 //check nữa trên bàn cờ theo hàng xéo từ phải qua trái
-bool _checkDiagonallyRightToLeft2(
-    {int positonStart = 4,
-    int positionEnd = 20,
-    int lenght = 5,
-    @required List<String> board}) {
+bool _checkDiagonallyRightToLeft2({
+  int positonStart = 4,
+  int positionEnd = 20,
+  int lenght = 5,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 4) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -328,25 +328,25 @@ bool _checkDiagonallyRightToLeft2(
     return false;
   } else {
     return _checkDiagonallyRightToLeft2(
-        positonStart: positonStartTmp - 1,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp - 5,
-        board: board);
+      positonStart: positonStartTmp - 1,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp - 5,
+    );
   }
 }
 
 //check nữa dưới bàn cờ theo hàng xéo từ phải qua trái
-bool _checkDiagonallyRightToLeft1(
-    {int positonStart = 4,
-    int positionEnd = 20,
-    int lenght = 5,
-    @required List<String> board}) {
+bool _checkDiagonallyRightToLeft1({
+  int positonStart = 9,
+  int positionEnd = 21,
+  int lenght = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 4) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -365,20 +365,22 @@ bool _checkDiagonallyRightToLeft1(
     return false;
   } else {
     return _checkDiagonallyRightToLeft1(
-        positonStart: positonStartTmp + 5,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp + 1,
-        board: board);
+      positonStart: positonStartTmp + 5,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp + 1,
+    );
   }
 }
 
-bool _checkGameHorizontal(
-    {int positonStart = 0, int positionEnd = 4, @required List<String> board}) {
+bool _checkGameHorizontal({
+  int positonStart = 0,
+  int positionEnd = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   for (int i = positonStartTmp; i <= positionEndTmp; i++) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
 
   try {
@@ -398,21 +400,21 @@ bool _checkGameHorizontal(
     return false;
   } else {
     return _checkGameHorizontal(
-        positonStart: positionEndTmp + 1,
-        positionEnd: positionEndTmp + 5,
-        board: board);
+      positonStart: positionEndTmp + 1,
+      positionEnd: positionEndTmp + 5,
+    );
   }
 }
 
-bool _checkGameVertical(
-    {int positonStart = 0,
-    int positionEnd = 20,
-    @required List<String> board}) {
+bool _checkGameVertical({
+  int positonStart = 0,
+  int positionEnd = 20,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   for (int i = positonStartTmp; i <= positionEndTmp; i += 5) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   // chổ này khi i <3 nó sẽ tự cộng cộng lên 1 hoặc 2 để kiểm tra mấy thằng cuối chứ i mà bằng cuối là nhảy ra khỏi mảng
   try {
@@ -432,9 +434,9 @@ bool _checkGameVertical(
     return false;
   } else {
     return _checkGameVertical(
-        positonStart: positonStart + 1,
-        positionEnd: positionEndTmp + 1,
-        board: board);
+      positonStart: positonStart + 1,
+      positionEnd: positionEndTmp + 1,
+    );
   }
 }
 
@@ -524,11 +526,11 @@ awaitfn(String title, String content, String btn1, String btn2) async {
 
 //------------------------------ MIN-MAX ------------------------------------------
 //function return score
-dynamic _checkDiagonallyLeftToRightScore2(
-    {int positonStart = 0,
-    int positionEnd = 24,
-    int lenght = 5,
-    @required List<String> board}) {
+dynamic _checkDiagonallyLeftToRightScore2({
+  int positonStart = 0,
+  int positionEnd = 24,
+  int lenght = 5,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
@@ -543,7 +545,7 @@ dynamic _checkDiagonallyLeftToRightScore2(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 50 : -50;
+        return winner == player ? 50 : -50;
       }
     }
   } catch (err) {
@@ -553,25 +555,25 @@ dynamic _checkDiagonallyLeftToRightScore2(
     return false;
   } else {
     return _checkDiagonallyLeftToRightScore2(
-        positonStart: positonStartTmp + 1,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp - 5,
-        board: board);
+      positonStart: positonStartTmp + 1,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp - 5,
+    );
   }
 }
 
 //check nữa dưới bàn cờ theo hàng xéo từ trái qua phải
-dynamic _checkDiagonallyLeftToRightScore1(
-    {int positonStart = 5,
-    int positionEnd = 23,
-    int lenght = 4,
-    @required List<String> board}) {
+dynamic _checkDiagonallyLeftToRightScore1({
+  int positonStart = 5,
+  int positionEnd = 23,
+  int lenght = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 6) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -580,7 +582,7 @@ dynamic _checkDiagonallyLeftToRightScore1(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 50 : -50;
+        return winner == player ? 50 : -50;
       }
     }
   } catch (err) {
@@ -590,25 +592,25 @@ dynamic _checkDiagonallyLeftToRightScore1(
     return false;
   } else {
     return _checkDiagonallyLeftToRightScore1(
-        positonStart: positonStartTmp + 5,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp - 1,
-        board: board);
+      positonStart: positonStartTmp + 5,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp - 1,
+    );
   }
 }
 
 //check nữa trên bàn cờ theo hàng xéo từ phải qua trái
-dynamic _checkDiagonallyRightToLeftScore2(
-    {int positonStart = 4,
-    int positionEnd = 20,
-    int lenght = 5,
-    @required List<String> board}) {
+dynamic _checkDiagonallyRightToLeftScore2({
+  int positonStart = 4,
+  int positionEnd = 20,
+  int lenght = 5,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 4) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -617,7 +619,7 @@ dynamic _checkDiagonallyRightToLeftScore2(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 50 : -50;
+        return winner == player ? 50 : -50;
       }
     }
   } catch (err) {
@@ -627,25 +629,25 @@ dynamic _checkDiagonallyRightToLeftScore2(
     return false;
   } else {
     return _checkDiagonallyRightToLeftScore2(
-        positonStart: positonStartTmp - 1,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp - 5,
-        board: board);
+      positonStart: positonStartTmp - 1,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp - 5,
+    );
   }
 }
 
 //check nữa dưới bàn cờ theo hàng xéo từ phải qua trái
-dynamic _checkDiagonallyRightToLeftScore1(
-    {int positonStart = 9,
-    int positionEnd = 21,
-    int lenght = 4,
-    @required List<String> board}) {
+dynamic _checkDiagonallyRightToLeftScore1({
+  int positonStart = 9,
+  int positionEnd = 21,
+  int lenght = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   int lenghtTmp = lenght;
   for (int i = positonStartTmp; i <= positionEnd; i += 4) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   try {
     for (int i = 0; i < lenght; i++) {
@@ -654,7 +656,7 @@ dynamic _checkDiagonallyRightToLeftScore1(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 50 : -50;
+        return winner == player ? 50 : -50;
       }
     }
   } catch (err) {
@@ -664,20 +666,22 @@ dynamic _checkDiagonallyRightToLeftScore1(
     return false;
   } else {
     return _checkDiagonallyRightToLeftScore1(
-        positonStart: positonStartTmp + 5,
-        lenght: lenghtTmp - 1,
-        positionEnd: positionEndTmp + 1,
-        board: board);
+      positonStart: positonStartTmp + 5,
+      lenght: lenghtTmp - 1,
+      positionEnd: positionEndTmp + 1,
+    );
   }
 }
 
-dynamic _checkGameHorizontalScore(
-    {int positonStart = 0, int positionEnd = 4, @required List<String> board}) {
+dynamic _checkGameHorizontalScore({
+  int positonStart = 0,
+  int positionEnd = 4,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   for (int i = positonStartTmp; i <= positionEndTmp; i++) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
 
   try {
@@ -687,7 +691,7 @@ dynamic _checkGameHorizontalScore(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 50 : -50;
+        return winner == player ? 50 : -50;
       }
     }
   } catch (err) {
@@ -697,21 +701,21 @@ dynamic _checkGameHorizontalScore(
     return false;
   } else {
     return _checkGameHorizontal(
-        positonStart: positionEndTmp + 1,
-        positionEnd: positionEndTmp + 5,
-        board: board);
+      positonStart: positionEndTmp + 1,
+      positionEnd: positionEndTmp + 5,
+    );
   }
 }
 
-dynamic _checkGameVerticalScore(
-    {int positonStart = 0,
-    int positionEnd = 20,
-    @required List<String> board}) {
+dynamic _checkGameVerticalScore({
+  int positonStart = 0,
+  int positionEnd = 20,
+}) {
   List<String> _boardTmp = [];
   int positonStartTmp = positonStart;
   int positionEndTmp = positionEnd;
   for (int i = positonStartTmp; i <= positionEndTmp; i += 5) {
-    _boardTmp.add(board[i]);
+    _boardTmp.add(_board[i]);
   }
   // chổ này khi i <3 nó sẽ tự cộng cộng lên 1 hoặc 2 để kiểm tra mấy thằng cuối chứ i mà bằng cuối là nhảy ra khỏi mảng
   try {
@@ -731,9 +735,9 @@ dynamic _checkGameVerticalScore(
     return false;
   } else {
     return _checkGameVertical(
-        positonStart: positonStart + 1,
-        positionEnd: positionEndTmp + 1,
-        board: board);
+      positonStart: positonStart + 1,
+      positionEnd: positionEndTmp + 1,
+    );
   }
 }
 
@@ -756,17 +760,17 @@ bool isMovesLeft(List<String> _board) {
 }
 
 int _eval(List<String> _board) {
-  dynamic checkGameHorizontalScore = _checkGameHorizontalScore(board: _board);
-  dynamic checkGameVerticalScore = _checkGameVerticalScore(board: _board);
+  dynamic checkGameHorizontalScore = _checkGameHorizontalScore();
+  dynamic checkGameVerticalScore = _checkGameVerticalScore();
   dynamic checkDiagonallyRightToLeftScore2 =
-      _checkDiagonallyRightToLeftScore2(board: _board);
+      _checkDiagonallyRightToLeftScore2();
   dynamic checkDiagonallyRightToLeftScore1 =
-      _checkDiagonallyRightToLeftScore1(board: _board);
+      _checkDiagonallyRightToLeftScore1();
   dynamic checkDiagonallyLeftToRightScore2 =
-      _checkDiagonallyLeftToRightScore2(board: _board);
+      _checkDiagonallyLeftToRightScore2();
   dynamic checkDiagonallyLeftToRightScore1 =
-      _checkDiagonallyLeftToRightScore1(board: _board);
-  if (checkGameHorizontalScore.runtimeType == int) {
+      _checkDiagonallyLeftToRightScore1();
+  if (checkGameHorizontalScore.runtimeType != bool) {
     return checkGameHorizontalScore;
   }
   if (checkGameVerticalScore.runtimeType != bool) {
@@ -788,30 +792,36 @@ int _eval(List<String> _board) {
 }
 
 // deth = 0, isMax = false
-int minmax(List<String> _board, int depth, bool isMax) {
+//, int depth
+int minmax(List<String> _board, bool isMax) {
   int score = _eval(_board);
-  print(score);
-  int best = 0, i;
+  int best = 0;
 
   if (score == 50 || score == -50) return score;
-  if (!isMovesLeft(_board)) return 0;
+  //if (!isMovesLeft(_board)) return 0;
   if (isMax) {
-    best = -100000;
-    for (i = 0; i < 25; i++) {
+    best = -1000000;
+    for (int i = 0; i < 25; i++) {
       if (_board[i] == '') {
+        // gán vào để tính giá trị min max mới
         _board[i] = player;
-        best = max(best, minmax(_board, depth + 1, !isMax));
+        //, depth + 1
+        best = max(best, minmax(_board, !isMax));
+        // remove giá trị mới gán để giữ nguyên list ban đầu
         _board[i] = '';
+        print("Best Max, $best index, $i loop ${testLoop++}");
       }
     }
     return best;
   } else {
-    best = 100000;
-    for (i = 0; i < 25; i++) {
+    best = 1000000;
+    for (int i = 0; i < 25; i++) {
       if (_board[i] == '') {
         _board[i] = opponent;
-        best = min(best, minmax(_board, depth + 1, !isMax));
+        //, depth + 1
+        best = min(best, minmax(_board, !isMax));
         _board[i] = '';
+        print("best min $best, index $i, loop${testLoop++}");
       }
     }
     return best;
@@ -819,13 +829,16 @@ int minmax(List<String> _board, int depth, bool isMax) {
 }
 
 int _bestMove(List<String> _board) {
-  int bestMove = -100000, moveVal;
+  int bestMove = -1000000, moveVal;
   int i, bi;
   for (i = 0; i < 25; i++) {
+    print("Lan lap $i");
     if (_board[i] == '') {
-      moveVal = -100000;
+      moveVal = -1000000;
       _board[i] = player;
-      moveVal = minmax(_board, 0, false);
+      // 0,
+      moveVal = minmax(_board, false);
+      // Lặp không return đc giá trị này luôn
       print("moveVal $moveVal");
       _board[i] = '';
       if (moveVal > bestMove) {
