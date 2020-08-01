@@ -170,7 +170,7 @@ class _BoxState extends State<Box> {
             } else if (!loading) {
               loading = true;
               _board[widget.index] = 'o';
-              if (currentMoves >= 8) {
+              if (currentMoves >= 24) {
               } else
                 _bestMove(_board);
             }
@@ -543,7 +543,7 @@ dynamic _checkDiagonallyLeftToRightScore2(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -580,7 +580,7 @@ dynamic _checkDiagonallyLeftToRightScore1(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -617,7 +617,7 @@ dynamic _checkDiagonallyRightToLeftScore2(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -654,7 +654,7 @@ dynamic _checkDiagonallyRightToLeftScore1(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -687,7 +687,7 @@ dynamic _checkGameHorizontalScore(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -721,7 +721,7 @@ dynamic _checkGameVerticalScore(
           _boardTmp[i] == _boardTmp[i + 1] &&
           _boardTmp[i + 1] == _boardTmp[i + 2]) {
         winner = _boardTmp[i];
-        return (winner == player) ? 9999 : -9999;
+        return (winner == player) ? 50 : -50;
       }
     }
   } catch (err) {
@@ -793,7 +793,7 @@ int minmax(List<String> _board, int depth, bool isMax) {
   print(score);
   int best = 0, i;
 
-  if (score == 9999 || score == -9999) return score;
+  if (score == 50 || score == -50) return score;
   if (!isMovesLeft(_board)) return 0;
   if (isMax) {
     best = -100000;
