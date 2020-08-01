@@ -10,7 +10,7 @@ String winner = '';
 var _gamePageState;
 var _turnState;
 var _context;
-String _turn = 'First Move: X';
+String _turn = 'x';
 bool loading = false;
 int testLoop = 0;
 List<String> _board = [
@@ -49,7 +49,7 @@ class GamePage extends StatefulWidget {
     _resetGame();
     vsBot = this.isBot;
 
-    if (vsBot) _turn = 'First Move: O';
+    if (vsBot) _turn = 'o';
   }
 
   @override
@@ -137,9 +137,9 @@ class _BoxState extends State<Box> {
       }
       _turnState.setState(() {
         if (currentMoves % 2 == 0)
-          _turn = 'Turn: X';
+          _turn = 'x';
         else
-          _turn = 'Turn: O';
+          _turn = 'o';
         _gamePageState.setState(() {});
       });
     });
@@ -153,14 +153,26 @@ class _BoxState extends State<Box> {
             decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
                 border: new Border.all(color: Colors.blue)),
-            child: Center(
-              child: Text(
-                _board[widget.index].toUpperCase(),
-                style: TextStyle(
-                  fontSize: 45,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            child: Stack(
+              children: <Widget>[
+                Center(
+                    child: _board[widget.index] == 'x'
+                        ? Icon(
+                            Icons.control_point,
+                            color: Colors.orange,
+                            size: 50,
+                          )
+                        : Container()),
+                Center(
+                  child: _board[widget.index] == 'o'
+                      ? Icon(
+                          Icons.radio_button_checked,
+                          color: Colors.red,
+                          size: 50,
+                        )
+                      : Container(),
+                )
+              ],
             )),
         onPressed: () {
           if (_board[widget.index] == '') {
@@ -192,17 +204,32 @@ class _StatusState extends State<Status> {
   Widget build(BuildContext context) {
     _turnState = this;
     return Card(
-        margin: EdgeInsets.all(40),
+        margin: EdgeInsets.all(20),
         child: Container(
-          width: 220,
-          height: 60,
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          child: Text(
-            _turn,
-            style: TextStyle(fontSize: 30),
-            textAlign: TextAlign.center,
-          ),
-        ));
+            width: 100,
+            height: 100,
+            //padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: Stack(
+              children: <Widget>[
+                Center(
+                    child: _turn == 'x'
+                        ? Icon(
+                            Icons.control_point,
+                            color: Colors.orange,
+                            size: 50,
+                          )
+                        : Container()),
+                Center(
+                  child: _turn == 'o'
+                      ? Icon(
+                          Icons.radio_button_checked,
+                          color: Colors.red,
+                          size: 50,
+                        )
+                      : Container(),
+                )
+              ],
+            )));
   }
 }
 
@@ -460,7 +487,7 @@ void _resetGame() {
     '',
     '',
   ];
-  _turn = 'First Move: X';
+  _turn = 'x';
   loading = false;
 }
 
@@ -868,7 +895,7 @@ int _bestMove(List<String> _board) {
   _gamePageState.setState(() {});
   loading = false;
   _turnState.setState(() {
-    _turn = 'Turn: X';
+    _turn = 'x';
     currentMoves++;
   });
   return bestMove;
