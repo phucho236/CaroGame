@@ -461,6 +461,7 @@ bool _checkGameVertical({
 
 void _resetGame() {
   currentMoves = 0;
+  depthaAscending = 1;
   status = '';
   _board = [
     '',
