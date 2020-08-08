@@ -1,2 +1,2 @@
 "# CaroGame" 
-"# code minimax ở thư mục lib/game.dart
+"# code minimax ở thư mục lib/game.dart"
